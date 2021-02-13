@@ -17,12 +17,22 @@ class Profile extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
             decoration: BoxDecoration(
               color: shallowGreen,
-              borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(100),
-                  bottomRight: Radius.circular(100)),
+              shape: BoxShape.rectangle,
             ),
-            child: CircleAvatar(
-              radius: 40,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  backgroundColor: white,
+                  radius: 50,
+                  child: Icon(
+                    Icons.person,
+                    size: 40,
+                  ),
+                ),
+                SizedBox(height: 5.0),
+                Text("N5,000")
+              ],
             ),
           )
         ],
