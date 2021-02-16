@@ -6,6 +6,7 @@ import 'package:plastiex/screens/home/home.dart';
 class Wrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // return Home();
     return StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {

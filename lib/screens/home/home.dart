@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:plastiex/screens/home/profile.dart';
+import 'package:plastiex/screens/home/rankings.dart';
 import 'package:plastiex/ui/appbar.dart';
 import 'package:plastiex/ui/colors.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
   final ValueNotifier _selectedIndex = ValueNotifier<int>(0);
 
   void _onItemTapped(int index) {
@@ -29,7 +35,7 @@ class Home extends StatelessWidget {
         ),
       ],
     ),
-    Text('Rankings'),
+    Rankings(),
     Profile()
   ];
 
@@ -46,6 +52,7 @@ class Home extends StatelessWidget {
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex.value,
           onTap: _onItemTapped,
+          selectedItemColor: Colors.black,
           items: [
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
