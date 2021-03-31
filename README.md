@@ -1,3 +1,3 @@
 # Plastiex
 
-Earn while saving our enviroment
+Earn while saving our environment

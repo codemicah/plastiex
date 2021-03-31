@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:plastiex/screens/home/profile.dart';
 import 'package:plastiex/screens/home/rankings.dart';
 import 'package:plastiex/ui/appbar.dart';
-import 'package:plastiex/ui/colors.dart';
 
 class Home extends StatefulWidget {
   @override

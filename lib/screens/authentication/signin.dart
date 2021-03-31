@@ -1,12 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:plastiex/screens/authentication/signup.dart';
+import 'package:plastiex/screens/home/home.dart';
 import 'package:plastiex/services/auth_service.dart';
 import 'package:plastiex/size_configuration/size_config.dart';
 
 class LoginScreen extends StatelessWidget {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -70,15 +71,23 @@ class LoginScreen extends StatelessWidget {
                   onTap: () async {
                     print("checking cred");
                     try {
-                      final userreg = await Authentication().SignInWithEmail(
+                      final userReg = await Authentication().SignInWithEmail(
                           email: emailController.text,
                           password: passwordController.text);
 
-                      final User userdetailes = userreg.user;
+                      final User userDetails = userReg.user;
+
+                      if (userReg != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Home()),
+                        );
+                      }
                       print("........");
-                      print("${userdetailes.uid}");
+                      print("${userDetails.uid}");
                     } catch (e) {
                       print(e);
+                      //TODO - a SnackBar would be nice here
                     }
                   },
                   child: Container(
@@ -99,15 +108,12 @@ class LoginScreen extends StatelessWidget {
                   height: GetHeight(16),
                 ),
                 InkWell(
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RegisterScreen())),
-                    child: Text("Don't have an account? Sign up")),
-                RaisedButton(
-                  onPressed: () async {},
-                  child: Text("check"),
-                )
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => RegisterScreen())),
+                  child: Text("Don't have an account? Sign up"),
+                ),
               ],
             ),
           ),

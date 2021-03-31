@@ -1,11 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:plastiex/services/auth_service.dart';
 import 'package:plastiex/size_configuration/size_config.dart';
 
 class RegisterScreen extends StatelessWidget {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -24,22 +23,23 @@ class RegisterScreen extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 35),
                   child: Container(
-                      height: GetHeight(64),
-                      width: GetWidth(305),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Getting Started",
-                            style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.w700),
-                          ),
-                          SizedBox(
-                            height: GetHeight(8),
-                          ),
-                          Text("Create an account to continue!")
-                        ],
-                      )),
+                    height: GetHeight(64),
+                    width: GetWidth(305),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Getting Started",
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.w700),
+                        ),
+                        SizedBox(
+                          height: GetHeight(8),
+                        ),
+                        Text("Create an account to continue!")
+                      ],
+                    ),
+                  ),
                 ),
                 SizedBox(
                   height: GetHeight(40),
@@ -67,12 +67,18 @@ class RegisterScreen extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () async {
-                    final reg = await Authentication()
-                        .Register_With_Email_password(
-                            email: emailController.text,
-                            password: passwordController.text);
-                    Navigator.pop(context);
-                    print("print");
+                    try {
+                      final newUser = await Authentication()
+                          .Register_With_Email_password(
+                              email: emailController.text,
+                              password: passwordController.text);
+                      Navigator.pop(context);
+                      print(newUser.uid);
+                      //TODO - SnackBar
+                    } catch (e) {
+                      print(e);
+                      //TODO - SnackBar
+                    }
                   },
                   child: Container(
                     height: GetHeight(44),
@@ -91,7 +97,6 @@ class RegisterScreen extends StatelessWidget {
                 SizedBox(
                   height: GetHeight(16),
                 ),
-                Text("Don't have an account? Sign up")
               ],
             ),
           ),
