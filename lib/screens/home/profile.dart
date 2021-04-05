@@ -24,7 +24,7 @@ class Profile extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light.copyWith(
-        statusBarBrightness: Brightness.dark,
+        statusBarIconBrightness: Brightness.dark,
         statusBarColor: white,
         systemNavigationBarColor: white,
         systemNavigationBarIconBrightness: Brightness.dark,

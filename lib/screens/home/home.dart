@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:plastiex/screens/home/profile.dart';
 import 'package:plastiex/screens/home/rankings.dart';
+import 'package:plastiex/size_configuration/size_config.dart';
 import 'package:plastiex/ui/appbar.dart';
 
 class Home extends StatefulWidget {
@@ -42,10 +43,13 @@ class _HomeState extends State<Home> {
     return ValueListenableBuilder(
       valueListenable: _selectedIndex,
       builder: (context, __, ___) => Scaffold(
-        body: Column(
-          children: [
-            _widgetOptions.elementAt(_selectedIndex.value),
-          ],
+        body: Container(
+          height: SizeConfig.screenheight,
+          child: Column(
+            children: [
+              _widgetOptions.elementAt(_selectedIndex.value),
+            ],
+          ),
         ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex.value,

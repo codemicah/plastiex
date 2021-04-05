@@ -153,11 +153,12 @@ class _RankingsState extends State<Rankings> {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light
-          .copyWith(statusBarColor: Color(0xffFFDB47)),
+      value: SystemUiOverlayStyle.light.copyWith(
+        statusBarColor: Color(0xffFFDB47),
+        statusBarIconBrightness: Brightness.dark,
+      ),
       child: SafeArea(
         child: Container(
-          height: SizeConfig.screenheight,
           width: SizeConfig.screenWidth,
           child: SingleChildScrollView(
             physics: AlwaysScrollableScrollPhysics(),
