@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:plastiex/screens/authentication/signin.dart';
 import 'package:plastiex/services/auth_service.dart';
 import 'package:plastiex/size_configuration/size_config.dart';
 
@@ -68,10 +69,12 @@ class RegisterScreen extends StatelessWidget {
                 InkWell(
                   onTap: () async {
                     try {
-                      final newUser = await Authentication()
-                          .Register_With_Email_password(
-                              email: emailController.text,
-                              password: passwordController.text);
+                      final newUser =
+                          await Authentication().Register_With_Email_password(
+                        email: emailController.text,
+                        password: passwordController.text,
+                        context: context,
+                      );
                       Navigator.pop(context);
                       print(newUser.uid);
                       //TODO - SnackBar
@@ -88,7 +91,7 @@ class RegisterScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(6)),
                     child: Center(
                       child: Text(
-                        'Register',
+                        'REGISTER',
                         style: TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ),
@@ -96,6 +99,11 @@ class RegisterScreen extends StatelessWidget {
                 ),
                 SizedBox(
                   height: GetHeight(16),
+                ),
+                InkWell(
+                  onTap: () => Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => LoginScreen())),
+                  child: Text("Alreadyhave an account? Sign In"),
                 ),
               ],
             ),

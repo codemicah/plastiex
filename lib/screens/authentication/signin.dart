@@ -72,17 +72,13 @@ class LoginScreen extends StatelessWidget {
                     print("checking cred");
                     try {
                       final userReg = await Authentication().SignInWithEmail(
-                          email: emailController.text,
-                          password: passwordController.text);
+                        email: emailController.text,
+                        password: passwordController.text,
+                        context: context,
+                      );
 
                       final User userDetails = userReg.user;
 
-                      if (userReg != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Home()),
-                        );
-                      }
                       print("........");
                       print("${userDetails.uid}");
                     } catch (e) {
@@ -108,7 +104,7 @@ class LoginScreen extends StatelessWidget {
                   height: GetHeight(16),
                 ),
                 InkWell(
-                  onTap: () => Navigator.push(
+                  onTap: () => Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                           builder: (context) => RegisterScreen())),
