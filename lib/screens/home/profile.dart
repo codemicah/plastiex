@@ -4,8 +4,22 @@ import 'package:flutter/services.dart';
 import 'package:plastiex/screens/authentication/signup.dart';
 import 'package:plastiex/size_configuration/size_config.dart';
 import 'package:plastiex/ui/colors.dart';
+import 'package:plastiex/widgets/submission_table.dart';
 
 class Profile extends StatelessWidget {
+  List<DataRow> dataRows = [
+    DataRow(cells: [
+      DataCell(Text('Bottle')),
+      DataCell(Text('20')),
+      DataCell(Text('50')),
+    ]),
+    DataRow(cells: [
+      DataCell(Text('Bottle')),
+      DataCell(Text('40')),
+      DataCell(Text('100')),
+    ]),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -27,10 +41,7 @@ class Profile extends StatelessWidget {
                   icon: Icon(
                     Icons.edit,
                   ),
-                  onPressed: () {
-                    showModalBottomSheet(
-                        context: context, builder: buildSubmissionModalSheet);
-                  },
+                  onPressed: () {},
                 ),
                 Row(
                   children: [
@@ -87,10 +98,16 @@ class Profile extends StatelessWidget {
                   SizedBox(height: 5.0),
                   Text("N5,000"),
                   SizedBox(height: 5.0),
-                  RaisedButton(
-                    color: Color(0xffFFDB47),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(Color(0xffFFDB47)),
+                    ),
                     onPressed: () {},
-                    child: Text('Withdraw'),
+                    child: Text(
+                      'Withdraw',
+                      style: TextStyle().copyWith(color: Colors.black),
+                    ),
                   ),
                   SizedBox(height: 10.0),
                   Row(
@@ -105,7 +122,11 @@ class Profile extends StatelessWidget {
                       IconButton(
                         tooltip: 'new request',
                         icon: Icon(Icons.add),
-                        onPressed: () {},
+                        onPressed: () {
+                          showModalBottomSheet(
+                              context: context,
+                              builder: buildSubmissionModalSheet);
+                        },
                       )
                     ],
                   ),
@@ -120,43 +141,34 @@ class Profile extends StatelessWidget {
                     child: SingleChildScrollView(
                       physics: AlwaysScrollableScrollPhysics(),
                       child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: DataTable(
-                          sortColumnIndex: 1,
-                          showBottomBorder: true,
-                          headingRowColor:
-                              MaterialStateProperty.all(Color(0xffFFDB47)),
-                          columns: [
-                            DataColumn(
-                              label: Text('Type'),
-                            ),
-                            DataColumn(
-                              onSort: (i, b) {
-                                print(i);
-                                print(b);
-                              },
-                              numeric: true,
-                              label: Text('Quantity'),
-                            ),
-                            DataColumn(
-                              numeric: true,
-                              label: Text('Worth (N)'),
-                            ),
-                          ],
-                          rows: [
-                            DataRow(cells: [
-                              DataCell(Text('Bottle')),
-                              DataCell(Text('20')),
-                              DataCell(Text('50')),
-                            ]),
-                            DataRow(cells: [
-                              DataCell(Text('Bottle')),
-                              DataCell(Text('40')),
-                              DataCell(Text('100')),
-                            ]),
-                          ],
+                          scrollDirection: Axis.horizontal,
+                          child: SubmissionTable(rows: dataRows).makeTable()),
+                    ),
+                  ),
+                  Divider(
+                    height: 5.0,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Pending submissions',
+                        style: TextStyle(
+                          fontSize: 15.0,
                         ),
                       ),
+                    ],
+                  ),
+                  Container(
+                    margin: EdgeInsets.all(5.0),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                    ),
+                    child: SingleChildScrollView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: SubmissionTable(rows: dataRows).makeTable()),
                     ),
                   ),
                 ],
