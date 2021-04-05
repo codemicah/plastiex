@@ -48,7 +48,7 @@ class RegisterScreen extends StatelessWidget {
                   width: GetWidth(305),
                   child: TextFormField(
                     controller: emailController,
-                    decoration: InputDecoration(labelText: "Username"),
+                    decoration: InputDecoration(labelText: "Email"),
                   ),
                 ),
                 SizedBox(
