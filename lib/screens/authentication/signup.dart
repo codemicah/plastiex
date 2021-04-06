@@ -49,6 +49,7 @@ class RegisterScreen extends StatelessWidget {
                   width: GetWidth(305),
                   child: TextFormField(
                     controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(labelText: "Email"),
                   ),
                 ),
@@ -61,6 +62,9 @@ class RegisterScreen extends StatelessWidget {
                     controller: passwordController,
                     obscureText: true,
                     decoration: InputDecoration(labelText: 'Password'),
+                    validator: (value) => value.length < 6
+                        ? "Password must not be less than 6 chars"
+                        : null,
                   ),
                 ),
                 SizedBox(

@@ -167,38 +167,77 @@ Widget buildSubmissionModalSheet(BuildContext context) {
   //location in school
   TextEditingController bottlesController = TextEditingController();
   TextEditingController locationController = TextEditingController();
+  TextEditingController capacityController = TextEditingController();
+  TextEditingController dateController = TextEditingController();
 
-  return Container(
-    color: Color(0xff757575),
-    child: Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30.0),
-          topRight: Radius.circular(30.0),
+  ValueNotifier _selectedDate = ValueNotifier<DateTime>(DateTime.now());
+
+  final key = GlobalKey<FormState>();
+
+  return GestureDetector(
+    onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+    child: ValueListenableBuilder(
+      valueListenable: _selectedDate,
+      builder: (context, _, __) => Container(
+        padding: EdgeInsets.all(30),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30.0),
+            topRight: Radius.circular(30.0),
+          ),
         ),
-      ),
-      child: Center(
-        child: Column(
-          children: [
-            TextFormField(
-              controller: bottlesController,
-              decoration: InputDecoration(labelText: "Number of bottles"),
+        child: SingleChildScrollView(
+          child: Form(
+            key: key,
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: bottlesController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(labelText: "Number of bottles"),
+                ),
+                TextFormField(
+                  controller: capacityController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(labelText: "Capacity (cl)"),
+                ),
+                TextFormField(
+                  controller: locationController,
+                  decoration: InputDecoration(labelText: "Location in school"),
+                ),
+                TextFormField(
+                  controller: dateController,
+                  decoration: InputDecoration(labelText: "Select Date"),
+                  onTap: () async {
+                    FocusScope.of(context).requestFocus(new FocusNode());
+                    final date = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(1900),
+                      lastDate: DateTime(2100),
+                    );
+                    dateController.text = date.toString().split(" ")[0];
+                    _selectedDate.value = date;
+                  },
+                ),
+                SizedBox(
+                  height: GetHeight(20),
+                ),
+                ElevatedButton(
+                  style: ButtonStyle().copyWith(
+                      backgroundColor: MaterialStateProperty.all(primaryColor)),
+                  child: Text(
+                    'Request',
+                    style: TextStyle().copyWith(color: Colors.black),
+                  ),
+                  onPressed: () async {
+                    //TODO - submit to cloud_firestore
+                  },
+                )
+              ],
             ),
-            TextFormField(
-              controller: locationController,
-              decoration: InputDecoration(labelText: "Location in school"),
-            ),
-            SizedBox(
-              height: GetHeight(20),
-            ),
-            ElevatedButton(
-              child: Text('Submit'),
-              onPressed: () async {
-                //TODO - submit to cloud_firestore
-              },
-            )
-          ],
+          ),
         ),
       ),
     ),
