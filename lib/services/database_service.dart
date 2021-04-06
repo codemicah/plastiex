@@ -9,6 +9,9 @@ class DatabaseService {
   CollectionReference submissionCollection =
       FirebaseFirestore.instance.collection("submissions");
 
+  CollectionReference userCollection =
+      FirebaseFirestore.instance.collection("submissions");
+
   Future createSubmission(Submission submission) async {
     try {
       final data = {
@@ -32,5 +35,16 @@ class DatabaseService {
     }
   }
 
-  Future getAllSubmissions() async {}
+  Future updateUser(String name, String avatar) async {
+    try {
+      final Map userData = {"name": name, "avatar": avatar, "is_admin": false};
+
+      final HashMap<String, Object> userDoc = HashMap.from(userData);
+      final document = await userCollection.doc(uid).set(userDoc);
+      return document;
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
 }

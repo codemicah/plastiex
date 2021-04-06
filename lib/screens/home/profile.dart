@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:plastiex/models/submission.dart';
-import 'package:plastiex/screens/authentication/signup.dart';
 import 'package:plastiex/services/auth_service.dart';
 import 'package:plastiex/services/database_service.dart';
 import 'package:plastiex/size_configuration/size_config.dart';
@@ -16,19 +15,6 @@ class Profile extends StatelessWidget {
   final user = FirebaseAuth.instance.currentUser;
 
   final _formKey = GlobalKey<FormState>();
-
-  List<DataRow> dataRows = [
-    DataRow(cells: [
-      DataCell(Text('Bottle')),
-      DataCell(Text('20')),
-      DataCell(Text('50')),
-    ]),
-    DataRow(cells: [
-      DataCell(Text('Bottle')),
-      DataCell(Text('40')),
-      DataCell(Text('100')),
-    ]),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -137,8 +123,7 @@ class Profile extends StatelessWidget {
                     Divider(
                       height: 5.0,
                     ),
-                    SubmissionTable(rows: dataRows)
-                        .makeTable(is_pending: false),
+                    SubmissionTable().makeTable(is_pending: false),
                     Divider(
                       height: 5.0,
                     ),
@@ -156,7 +141,7 @@ class Profile extends StatelessWidget {
                     Divider(
                       height: 5.0,
                     ),
-                    SubmissionTable(rows: dataRows).makeTable(),
+                    SubmissionTable().makeTable(),
                   ],
                 ),
               )

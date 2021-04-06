@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:plastiex/services/database_service.dart';
 import 'package:plastiex/ui/loader.dart';
 
 class Authentication {
@@ -27,11 +28,11 @@ class Authentication {
     try {
       loader.loading(context);
 
-      final Register = await _auth.createUserWithEmailAndPassword(
+      final user = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-
+      // DatabaseService(uid: user.)
       Navigator.pop(context);
     } catch (e) {
       Navigator.pop(context);
