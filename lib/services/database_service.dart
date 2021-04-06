@@ -12,15 +12,25 @@ class DatabaseService {
   Future createSubmission(Submission submission) async {
     try {
       final data = {
-        "uid": submission.uid,
+        "user": uid,
         "capacity": submission.capacity,
-        "quantity": submission.quantity
+        "quantity": submission.quantity,
+        "is_pending": submission.isPending,
+        "location": submission.location,
+        "created_at": DateTime.now(),
+        "submission_date": submission.date,
+        "type": submission.type,
+        "price": submission.price
       };
       Map<String, Object> subData = HashMap.from(data);
-      submissionCollection.add(subData);
+      final document = await submissionCollection.add(subData);
+
+      return document;
     } catch (e) {
       print(e.toString());
       return null;
     }
   }
+
+  Future getAllSubmissions() async {}
 }

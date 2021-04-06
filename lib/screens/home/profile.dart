@@ -1,14 +1,21 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:plastiex/models/submission.dart';
 import 'package:plastiex/screens/authentication/signup.dart';
 import 'package:plastiex/services/auth_service.dart';
+import 'package:plastiex/services/database_service.dart';
 import 'package:plastiex/size_configuration/size_config.dart';
 import 'package:plastiex/ui/colors.dart';
+import 'package:plastiex/ui/loader.dart';
 import 'package:plastiex/widgets/submission_table.dart';
 
 class Profile extends StatelessWidget {
   final Authentication _auth = Authentication();
+
+  final user = FirebaseAuth.instance.currentUser;
+
+  final _formKey = GlobalKey<FormState>();
 
   List<DataRow> dataRows = [
     DataRow(cells: [
@@ -121,10 +128,8 @@ class Profile extends StatelessWidget {
                         IconButton(
                           tooltip: 'new request',
                           icon: Icon(Icons.add),
-                          onPressed: () {
-                            showModalBottomSheet(
-                                context: context,
-                                builder: buildSubmissionModalSheet);
+                          onPressed: () async {
+                            await buildSubmissionModalSheet(context);
                           },
                         )
                       ],
@@ -132,7 +137,8 @@ class Profile extends StatelessWidget {
                     Divider(
                       height: 5.0,
                     ),
-                    SubmissionTable(rows: dataRows).makeTable(),
+                    SubmissionTable(rows: dataRows)
+                        .makeTable(is_pending: false),
                     Divider(
                       height: 5.0,
                     ),
@@ -160,86 +166,101 @@ class Profile extends StatelessWidget {
       ),
     );
   }
-}
 
-Widget buildSubmissionModalSheet(BuildContext context) {
-  //number of bottles
-  //location in school
-  TextEditingController bottlesController = TextEditingController();
-  TextEditingController locationController = TextEditingController();
-  TextEditingController capacityController = TextEditingController();
-  TextEditingController dateController = TextEditingController();
+  Future buildSubmissionModalSheet(BuildContext context) {
+    //number of bottles
+    //location in school
+    TextEditingController bottlesController = TextEditingController();
+    TextEditingController locationController = TextEditingController();
+    TextEditingController capacityController = TextEditingController();
+    TextEditingController dateController = TextEditingController();
 
-  ValueNotifier _selectedDate = ValueNotifier<DateTime>(DateTime.now());
+    ValueNotifier _selectedDate = ValueNotifier<DateTime>(DateTime.now());
 
-  final key = GlobalKey<FormState>();
-
-  return GestureDetector(
-    onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
-    child: ValueListenableBuilder(
-      valueListenable: _selectedDate,
-      builder: (context, _, __) => Container(
-        padding: EdgeInsets.all(30),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30.0),
-            topRight: Radius.circular(30.0),
+    final dialog = Dialog(
+        child: GestureDetector(
+      onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+      child: ValueListenableBuilder(
+        valueListenable: _selectedDate,
+        builder: (context, _, __) => Container(
+          padding: EdgeInsets.all(30),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30.0),
+              topRight: Radius.circular(30.0),
+            ),
           ),
-        ),
-        child: SingleChildScrollView(
-          child: Form(
-            key: key,
-            child: Column(
-              children: [
-                TextFormField(
-                  controller: bottlesController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: "Number of bottles"),
-                ),
-                TextFormField(
-                  controller: capacityController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: "Capacity (cl)"),
-                ),
-                TextFormField(
-                  controller: locationController,
-                  decoration: InputDecoration(labelText: "Location in school"),
-                ),
-                TextFormField(
-                  controller: dateController,
-                  decoration: InputDecoration(labelText: "Select Date"),
-                  onTap: () async {
-                    FocusScope.of(context).requestFocus(new FocusNode());
-                    final date = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(1900),
-                      lastDate: DateTime(2100),
-                    );
-                    dateController.text = date.toString().split(" ")[0];
-                    _selectedDate.value = date;
-                  },
-                ),
-                SizedBox(
-                  height: GetHeight(20),
-                ),
-                ElevatedButton(
-                  style: ButtonStyle().copyWith(
-                      backgroundColor: MaterialStateProperty.all(primaryColor)),
-                  child: Text(
-                    'Request',
-                    style: TextStyle().copyWith(color: Colors.black),
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: bottlesController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(labelText: "Number of bottles"),
                   ),
-                  onPressed: () async {
-                    //TODO - submit to cloud_firestore
-                  },
-                )
-              ],
+                  TextFormField(
+                    controller: capacityController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(labelText: "Capacity (cl)"),
+                  ),
+                  TextFormField(
+                    controller: locationController,
+                    decoration: InputDecoration(labelText: "Location"),
+                  ),
+                  TextFormField(
+                    controller: dateController,
+                    decoration: InputDecoration(labelText: "Select Date"),
+                    onTap: () async {
+                      FocusScope.of(context).requestFocus(new FocusNode());
+                      final date = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime(2100),
+                      );
+                      dateController.text = date.toString().split(" ")[0];
+                      _selectedDate.value = date;
+                    },
+                  ),
+                  SizedBox(
+                    height: GetHeight(20),
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle().copyWith(
+                        backgroundColor:
+                            MaterialStateProperty.all(primaryColor)),
+                    child: Text(
+                      'Request',
+                      style: TextStyle().copyWith(color: Colors.black),
+                    ),
+                    onPressed: () async {
+                      print(bottlesController.text);
+                      print(capacityController.text);
+                      loader.loading(context);
+
+                      final document = await DatabaseService(uid: user.uid)
+                          .createSubmission(Submission(
+                        quantity: int.parse(bottlesController.text),
+                        capacity: int.parse(capacityController.text),
+                        date: DateTime.parse(dateController.text),
+                        location: locationController.text,
+                      ));
+
+                      Navigator.pop(context);
+                      print(document);
+                    },
+                  )
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
+    ));
+
+    return showDialog(context: context, builder: (context) => dialog);
+  }
 }
