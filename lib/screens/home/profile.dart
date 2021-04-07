@@ -5,6 +5,7 @@ import 'package:plastiex/models/submission.dart';
 import 'package:plastiex/services/auth_service.dart';
 import 'package:plastiex/services/database_service.dart';
 import 'package:plastiex/size_configuration/size_config.dart';
+import 'package:plastiex/ui/alert.dart';
 import 'package:plastiex/ui/colors.dart';
 import 'package:plastiex/ui/loader.dart';
 import 'package:plastiex/widgets/submission_table.dart';
@@ -82,13 +83,13 @@ class Profile extends StatelessWidget {
                     ),
                     SizedBox(height: 5.0),
                     Text(
-                      "Micah Gidado",
+                      "${user.displayName == null ? user.email : user.displayName}",
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                     SizedBox(height: 5.0),
-                    Text("N5,000"),
+                    DatabaseService(uid: user.uid).getBalance(context),
                     SizedBox(height: 5.0),
                     ElevatedButton(
                       style: ButtonStyle(
@@ -121,11 +122,11 @@ class Profile extends StatelessWidget {
                       ],
                     ),
                     Divider(
-                      height: 5.0,
+                      height: 10.0,
                     ),
-                    SubmissionTable().makeTable(is_pending: false),
+                    SubmissionTable(uid: user.uid).makeTable(is_pending: false),
                     Divider(
-                      height: 5.0,
+                      height: 10.0,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -139,9 +140,16 @@ class Profile extends StatelessWidget {
                       ],
                     ),
                     Divider(
-                      height: 5.0,
+                      height: 10.0,
                     ),
-                    SubmissionTable().makeTable(),
+                    SubmissionTable(uid: user.uid).makeTable(),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: SubmissionTable(uid: user.uid).adminTable(),
+                      ),
+                    )
                   ],
                 ),
               )
@@ -234,8 +242,18 @@ class Profile extends StatelessWidget {
                         location: locationController.text,
                       ));
 
-                      Navigator.pop(context);
-                      print(document);
+                      if (document != null) {
+                        Alert().showAlert(
+                            message: "Submission request added",
+                            context: context);
+                      } else {
+                        Alert().showAlert(
+                            message: "Submission request added",
+                            context: context,
+                            isSuccess: false);
+                      }
+                      int count = 0;
+                      Navigator.of(context).popUntil((_) => count++ >= 2);
                     },
                   )
                 ],

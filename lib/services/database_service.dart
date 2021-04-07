@@ -1,16 +1,26 @@
 import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:plastiex/models/submission.dart';
+import 'package:flutter/material.dart';
 
 class DatabaseService {
   final String uid;
   DatabaseService({this.uid});
 
+  FirebaseAuth _auth = FirebaseAuth.instance;
+
   CollectionReference submissionCollection =
       FirebaseFirestore.instance.collection("submissions");
 
   CollectionReference userCollection =
-      FirebaseFirestore.instance.collection("submissions");
+      FirebaseFirestore.instance.collection("users");
+
+  CollectionReference balanceCollection =
+      FirebaseFirestore.instance.collection("balances");
+
+  CollectionReference adminCollection =
+      FirebaseFirestore.instance.collection("admins");
 
   Future createSubmission(Submission submission) async {
     try {
@@ -35,16 +45,42 @@ class DatabaseService {
     }
   }
 
-  Future updateUser(String name, String avatar) async {
+  Future updateUser({String name, String avatar}) async {
     try {
-      final Map userData = {"name": name, "avatar": avatar, "is_admin": false};
-
-      final HashMap<String, Object> userDoc = HashMap.from(userData);
-      final document = await userCollection.doc(uid).set(userDoc);
-      return document;
+      await _auth.currentUser
+          .updateProfile(displayName: name, photoURL: avatar);
     } catch (e) {
       print(e);
       return null;
     }
+  }
+
+  Future createBalance() async {
+    try {
+      final Map data = {"balance": 0.0};
+      final HashMap<String, Object> userData = HashMap.from(data);
+      final document = await balanceCollection.doc(uid).set(userData);
+
+      return document;
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
+  Widget getBalance(BuildContext context) {
+    return StreamBuilder(
+      stream: balanceCollection.doc(uid).snapshots(),
+      builder:
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (!snapshot.hasData) {
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text("Error");
+        } else {
+          return Text("N${snapshot.data.get('balance')}");
+        }
+      },
+    );
   }
 }

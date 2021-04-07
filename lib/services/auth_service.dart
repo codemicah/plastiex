@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:plastiex/services/database_service.dart';
+import 'package:plastiex/ui/alert.dart';
 import 'package:plastiex/ui/loader.dart';
 
 class Authentication {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
   SignInWithEmail({String email, String password, BuildContext context}) async {
     try {
       // show loader
@@ -14,11 +16,13 @@ class Authentication {
         email: email,
         password: password,
       );
+      // pop loader
       Navigator.pop(context);
-      final User user = SignIn.user;
       return SignIn;
     } catch (e) {
       Navigator.pop(context);
+      Alert()
+          .showAlert(isSuccess: false, message: e.toString(), context: context);
       return null;
     }
   }
@@ -28,14 +32,23 @@ class Authentication {
     try {
       loader.loading(context);
 
-      final user = await _auth.createUserWithEmailAndPassword(
+      final register = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      // DatabaseService(uid: user.)
+
+      await DatabaseService(uid: register.user.uid).updateUser();
+
+      await DatabaseService(uid: register.user.uid).createBalance();
+
+      final User user = register.user;
+
       Navigator.pop(context);
+      return user;
     } catch (e) {
       Navigator.pop(context);
+      Alert()
+          .showAlert(isSuccess: false, message: e.toString(), context: context);
       return null;
     }
   }

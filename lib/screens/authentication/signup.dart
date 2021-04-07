@@ -79,7 +79,6 @@ class RegisterScreen extends StatelessWidget {
                         password: passwordController.text,
                         context: context,
                       );
-                      Navigator.pop(context);
                       print(newUser.uid);
                       //TODO - SnackBar
                     } catch (e) {
