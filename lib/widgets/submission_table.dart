@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:plastiex/models/submission.dart';
+import 'package:plastiex/size_configuration/size_config.dart';
 import 'package:plastiex/ui/colors.dart';
 
 class SubmissionTable {
@@ -30,6 +32,7 @@ class SubmissionTable {
             return DataTable(
               sortColumnIndex: 1,
               showBottomBorder: true,
+              showCheckboxColumn: false,
               headingRowColor: MaterialStateProperty.all(Color(0xffFFDB47)),
               columns: [
                 DataColumn(
@@ -54,11 +57,17 @@ class SubmissionTable {
                 else if (!snapshot.hasData)
                   return DataRow(cells: [DataCell(Text("Nothing here yet"))]);
                 else
-                  return DataRow(cells: [
-                    DataCell(Text("${document.data()['type']}")),
-                    DataCell(Text("${document.data()['quantity']}")),
-                    DataCell(Text("${document.data()['price']}"))
-                  ]);
+                  return DataRow(
+                      onSelectChanged: (value) => showBottomSheet(
+                          elevation: 5,
+                          context: context,
+                          builder: (context) => submissionDetails(
+                              parseSubmission(document.data()), context)),
+                      cells: [
+                        DataCell(Text("${document.data()['type']}")),
+                        DataCell(Text("${document.data()['quantity']}")),
+                        DataCell(Text("${document.data()['price']}"))
+                      ]);
               }).toList(),
             );
           }
@@ -98,6 +107,7 @@ class SubmissionTable {
                         height: 10.0,
                       ),
                       DataTable(
+                        showCheckboxColumn: false,
                         sortColumnIndex: 1,
                         showBottomBorder: true,
                         headingRowColor:
@@ -118,9 +128,6 @@ class SubmissionTable {
                           DataColumn(
                             label: Text('Pending'),
                           ),
-                          DataColumn(
-                            label: Text('Action'),
-                          ),
                         ],
                         rows:
                             snapshot.data.docs.map((DocumentSnapshot document) {
@@ -131,16 +138,20 @@ class SubmissionTable {
                             return DataRow(
                                 cells: [DataCell(Text("Nothing here yet"))]);
                           else
-                            return DataRow(cells: [
-                              DataCell(Text("${document.data()['quantity']}")),
-                              DataCell(Text("${document.data()['price']}")),
-                              DataCell(
-                                  Text("${document.data()['is_pending']}")),
-                              DataCell(document.data()['is_pending']
-                                  ? TextButton(
-                                      onPressed: () {}, child: Text("Confirm"))
-                                  : Text("Confirmed")),
-                            ]);
+                            return DataRow(
+                                onSelectChanged: (value) => showBottomSheet(
+                                    elevation: 5,
+                                    context: context,
+                                    builder: (context) => submissionDetails(
+                                        parseSubmission(document.data()),
+                                        context)),
+                                cells: [
+                                  DataCell(
+                                      Text("${document.data()['quantity']}")),
+                                  DataCell(Text("${document.data()['price']}")),
+                                  DataCell(Text(
+                                      "${document.data()['is_pending'].toString().toUpperCase()}")),
+                                ]);
                         }).toList(),
                       )
                     ],
@@ -152,5 +163,56 @@ class SubmissionTable {
           } else
             return SizedBox();
         });
+  }
+
+  Submission parseSubmission(Map<String, dynamic> data) {
+    print(Timestamp.now());
+    return Submission(
+        quantity: data["quantity"],
+        user: data["user"],
+        capacity: data["capacity"],
+        price: data["price"],
+        isPending: data["is_pending"],
+        date: data["date"],
+        location: data["location"],
+        type: data["type"]);
+  }
+
+  Widget submissionDetails(Submission submission, BuildContext context) {
+    return Container(
+      width: SizeConfig.screenWidth,
+      padding: EdgeInsets.all(30.0),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [BoxShadow(color: Colors.grey[300], blurRadius: 50.0)]),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(children: [Text("Type: "), Text(submission.type)]),
+          Row(children: [Text("Quantity: "), Text("${submission.quantity}")]),
+          Row(children: [Text("Capacity: "), Text("${submission.capacity}cl")]),
+          Row(children: [Text("Price: "), Text("N${submission.price}")]),
+          Row(children: [Text("Location: "), Text("${submission.location}")]),
+          Row(children: [Text("Date: "), Text("${submission.date}")]),
+          SizedBox(height: 20.0),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+            ElevatedButton(
+              child: Text("Confirm"),
+              onPressed: submission.isPending ? () {} : null,
+              style: ButtonStyle().copyWith(
+                backgroundColor: MaterialStateProperty.all(green),
+              ),
+            ),
+            ElevatedButton(
+              style: ButtonStyle().copyWith(
+                backgroundColor: MaterialStateProperty.all(red),
+              ),
+              child: Text("Close"),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ]),
+        ],
+      ),
+    );
   }
 }

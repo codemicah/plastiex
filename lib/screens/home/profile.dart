@@ -83,7 +83,7 @@ class Profile extends StatelessWidget {
                     ),
                     SizedBox(height: 5.0),
                     Text(
-                      "${user.displayName == null ? user.email : user.displayName}",
+                      "${user.displayName == null || user.displayName.isEmpty ? user.email : user.displayName}",
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                       ),
@@ -95,11 +95,14 @@ class Profile extends StatelessWidget {
                       style: ButtonStyle(
                         backgroundColor:
                             MaterialStateProperty.all(Color(0xffFFDB47)),
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.black),
                       ),
-                      onPressed: () {},
+                      onPressed: () async {
+                        await _showWithdrawalDialog(context);
+                      },
                       child: Text(
                         'Withdraw',
-                        style: TextStyle().copyWith(color: Colors.black),
                       ),
                     ),
                     SizedBox(height: 10.0),
@@ -160,6 +163,46 @@ class Profile extends StatelessWidget {
     );
   }
 
+  Future _showWithdrawalDialog(BuildContext context) async {
+    final _withdrawalFormKey = GlobalKey<FormState>();
+    TextEditingController _withdrawalAmountController = TextEditingController();
+    return showDialog(
+        context: context,
+        builder: (context) => GestureDetector(
+              onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+              child: Dialog(
+                elevation: 0,
+                child: Container(
+                  padding: EdgeInsets.all(30.0),
+                  child: Form(
+                    key: _withdrawalFormKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextFormField(
+                          controller: _withdrawalAmountController,
+                          keyboardType: TextInputType.number,
+                          autofocus: true,
+                          decoration: InputDecoration(labelText: "Amount"),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {},
+                          child: Text("Proceed"),
+                          style: ButtonStyle().copyWith(
+                            backgroundColor:
+                                MaterialStateProperty.all(primaryColor),
+                            foregroundColor:
+                                MaterialStateProperty.all(Colors.black),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ));
+  }
+
   Future buildSubmissionModalSheet(BuildContext context) {
     //number of bottles
     //location in school
@@ -192,17 +235,28 @@ class Profile extends StatelessWidget {
                   TextFormField(
                     controller: bottlesController,
                     keyboardType: TextInputType.number,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: InputDecoration(labelText: "Number of bottles"),
+                    validator: (value) => value.isEmpty || int.parse(value) < 20
+                        ? "must be of 20+"
+                        : null,
                   ),
+                  SizedBox(height: 5.0),
                   TextFormField(
                     controller: capacityController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(labelText: "Capacity (cl)"),
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (value) => value.isEmpty || int.parse(value) < 50
+                        ? "must be of 50cl+"
+                        : null,
                   ),
+                  SizedBox(height: 5.0),
                   TextFormField(
                     controller: locationController,
                     decoration: InputDecoration(labelText: "Location"),
                   ),
+                  SizedBox(height: 5.0),
                   TextFormField(
                     controller: dateController,
                     decoration: InputDecoration(labelText: "Select Date"),
@@ -230,30 +284,30 @@ class Profile extends StatelessWidget {
                       style: TextStyle().copyWith(color: Colors.black),
                     ),
                     onPressed: () async {
-                      print(bottlesController.text);
-                      print(capacityController.text);
-                      loader.loading(context);
+                      if (_formKey.currentState.validate()) {
+                        loader.loading(context);
 
-                      final document = await DatabaseService(uid: user.uid)
-                          .createSubmission(Submission(
-                        quantity: int.parse(bottlesController.text),
-                        capacity: int.parse(capacityController.text),
-                        date: DateTime.parse(dateController.text),
-                        location: locationController.text,
-                      ));
+                        final document = await DatabaseService(uid: user.uid)
+                            .createSubmission(Submission(
+                          quantity: int.parse(bottlesController.text),
+                          capacity: int.parse(capacityController.text),
+                          date: DateTime.parse(dateController.text),
+                          location: locationController.text,
+                        ));
 
-                      if (document != null) {
-                        Alert().showAlert(
-                            message: "Submission request added",
-                            context: context);
-                      } else {
-                        Alert().showAlert(
-                            message: "Submission request added",
-                            context: context,
-                            isSuccess: false);
+                        if (document != null) {
+                          Alert().showAlert(
+                              message: "Submission request added",
+                              context: context);
+                        } else {
+                          Alert().showAlert(
+                              message: "Submission request added",
+                              context: context,
+                              isSuccess: false);
+                        }
+                        int count = 0;
+                        Navigator.of(context).popUntil((_) => count++ >= 2);
                       }
-                      int count = 0;
-                      Navigator.of(context).popUntil((_) => count++ >= 2);
                     },
                   )
                 ],

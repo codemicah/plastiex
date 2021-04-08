@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:plastiex/screens/home/home.dart';
 import 'package:plastiex/services/database_service.dart';
 import 'package:plastiex/ui/alert.dart';
 import 'package:plastiex/ui/loader.dart';
@@ -44,7 +45,8 @@ class Authentication {
       final User user = register.user;
 
       Navigator.pop(context);
-      return user;
+      Navigator.of(context)
+          .pushReplacement(MaterialPageRoute(builder: (context) => Home()));
     } catch (e) {
       Navigator.pop(context);
       Alert()
