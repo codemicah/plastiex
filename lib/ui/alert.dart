@@ -8,7 +8,7 @@ class Alert {
       content: Row(
         children: [
           Icon(
-            Icons.info_outlined,
+            isSuccess ? Icons.info_outlined : Icons.warning_rounded,
             color: Colors.white,
           ),
           SizedBox(

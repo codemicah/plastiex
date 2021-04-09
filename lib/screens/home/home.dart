@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:plastiex/screens/home/profile.dart';
-import 'package:plastiex/screens/home/rankings.dart';
-import 'package:plastiex/ui/appbar.dart';
+import 'package:plastiex/widgets/home_widget.dart';
+import 'package:plastiex/widgets/profile.dart';
+import 'package:plastiex/widgets/rankings.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -15,27 +15,7 @@ class _HomeState extends State<Home> {
     _selectedIndex.value = index;
   }
 
-  final List<Widget> _widgetOptions = [
-    Column(
-      children: [
-        CustomAppBar(
-          title: 'Home',
-          color: Colors.blue,
-          items: [
-            PopupMenuButton(
-                padding: EdgeInsets.zero,
-                itemBuilder: (context) => [
-                      PopupMenuItem(
-                        child: Text("Settings"),
-                      )
-                    ])
-          ],
-        ),
-      ],
-    ),
-    Rankings(),
-    Profile()
-  ];
+  final List<Widget> _widgetOptions = [HomeWidget(), Rankings(), Profile()];
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +30,8 @@ class _HomeState extends State<Home> {
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
           currentIndex: _selectedIndex.value,
           onTap: _onItemTapped,
           selectedItemColor: Colors.black,
