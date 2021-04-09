@@ -3,5 +3,9 @@ class Ranking {
   int totalSubmissions, position;
 
   Ranking(
-      {this.name, this.uid, this.totalSubmissions, this.avatar, this.position});
+      {this.name = "No Name",
+      this.uid,
+      this.totalSubmissions,
+      this.avatar = 'assets/imgs/avatar.jpg',
+      this.position = 0});
 }

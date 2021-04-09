@@ -7,8 +7,10 @@ class HomeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light.copyWith(
-        statusBarColor: Colors.white,
         statusBarIconBrightness: Brightness.dark,
+        statusBarColor: white,
+        systemNavigationBarColor: white,
+        systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: SafeArea(
         child: Container(

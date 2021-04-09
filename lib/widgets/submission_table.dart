@@ -23,9 +23,12 @@ class SubmissionTable {
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
-            return CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation(primaryColor),
-            );
+            return SizedBox(
+                height: 15.0,
+                width: 15.0,
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation(primaryColor),
+                ));
           } else if (snapshot.data.docs.isEmpty) {
             return Text("There's nothing to show here");
           } else {
@@ -85,9 +88,12 @@ class SubmissionTable {
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (!snapshot.hasData) {
-                  return CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation(primaryColor),
-                  );
+                  return SizedBox(
+                      height: 10.0,
+                      width: 10.0,
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(primaryColor),
+                      ));
                 } else if (snapshot.data.docs.isEmpty) {
                   return Text("There's nothing to show here");
                 } else {
@@ -168,14 +174,15 @@ class SubmissionTable {
   Submission parseSubmission(Map<String, dynamic> data) {
     print(Timestamp.now());
     return Submission(
-        quantity: data["quantity"],
-        user: data["user"],
-        capacity: data["capacity"],
-        price: data["price"],
-        isPending: data["is_pending"],
-        date: data["date"],
-        location: data["location"],
-        type: data["type"]);
+      quantity: data["quantity"],
+      user: data["user"],
+      capacity: data["capacity"],
+      price: data["price"],
+      isPending: data["is_pending"],
+      date: data["date"],
+      location: data["location"],
+      type: data["type"],
+    );
   }
 
   Widget submissionDetails(Submission submission, BuildContext context) {

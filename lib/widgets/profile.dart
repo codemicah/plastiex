@@ -99,6 +99,7 @@ class Profile extends StatelessWidget {
                             MaterialStateProperty.all(Colors.black),
                       ),
                       onPressed: () async {
+                        await DatabaseService(uid: user.uid).getUser(user.uid);
                         await _showWithdrawalDialog(context);
                       },
                       child: Text(
@@ -127,7 +128,11 @@ class Profile extends StatelessWidget {
                     Divider(
                       height: 10.0,
                     ),
-                    SubmissionTable(uid: user.uid).makeTable(is_pending: false),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SubmissionTable(uid: user.uid)
+                          .makeTable(is_pending: false),
+                    ),
                     Divider(
                       height: 10.0,
                     ),
@@ -145,7 +150,10 @@ class Profile extends StatelessWidget {
                     Divider(
                       height: 10.0,
                     ),
-                    SubmissionTable(uid: user.uid).makeTable(),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SubmissionTable(uid: user.uid).makeTable(),
+                    ),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: SingleChildScrollView(
@@ -174,9 +182,6 @@ class Profile extends StatelessWidget {
                 elevation: 0,
                 child: Container(
                   padding: EdgeInsets.all(30.0),
-                  decoration: BoxDecoration(color: Colors.white, boxShadow: [
-                    BoxShadow(color: Colors.grey[300], blurRadius: 5)
-                  ]),
                   child: Form(
                     key: _withdrawalFormKey,
                     child: Column(
