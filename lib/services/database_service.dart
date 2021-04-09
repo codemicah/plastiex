@@ -1,8 +1,10 @@
 import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:plastiex/models/submission.dart';
 import 'package:flutter/material.dart';
+import 'package:plastiex/models/submission.dart';
+import 'package:plastiex/ui/alert.dart';
 
 class DatabaseService {
   final String uid;
@@ -82,5 +84,27 @@ class DatabaseService {
         }
       },
     );
+  }
+
+  Future withdraw(String amount, BuildContext context) async {
+    try {
+      final balance =
+          await (await balanceCollection.doc(uid).get()).get("balance");
+
+      if (int.parse(amount) > balance)
+        return Alert().showAlert(
+            isSuccess: false,
+            context: context,
+            message: 'Insufficient balance');
+
+      await balanceCollection
+          .doc(uid)
+          .update({"balance": balance - int.parse(amount)});
+
+      return true;
+    } catch (e) {
+      print(e);
+      return null;
+    }
   }
 }

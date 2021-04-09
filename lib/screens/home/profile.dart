@@ -174,6 +174,9 @@ class Profile extends StatelessWidget {
                 elevation: 0,
                 child: Container(
                   padding: EdgeInsets.all(30.0),
+                  decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                    BoxShadow(color: Colors.grey[300], blurRadius: 5)
+                  ]),
                   child: Form(
                     key: _withdrawalFormKey,
                     child: Column(
@@ -186,7 +189,14 @@ class Profile extends StatelessWidget {
                           decoration: InputDecoration(labelText: "Amount"),
                         ),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            loader.loading(context);
+                            await DatabaseService(uid: user.uid).withdraw(
+                                _withdrawalAmountController.text, context);
+
+                            int count = 0;
+                            Navigator.of(context).popUntil((_) => count++ >= 2);
+                          },
                           child: Text("Proceed"),
                           style: ButtonStyle().copyWith(
                             backgroundColor:
