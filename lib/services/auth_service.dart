@@ -10,20 +10,13 @@ class Authentication {
 
   SignInWithEmail({String email, String password, BuildContext context}) async {
     try {
-      // show loader
-      loader.loading(context);
-
       final SignIn = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      // pop loader
-      Navigator.pop(context);
       return SignIn;
-    } catch (e) {
-      Navigator.pop(context);
-      Alert()
-          .showAlert(isSuccess: false, message: e.toString(), context: context);
+    } on FirebaseAuthException catch (e) {
+      Alert().showAlert(isSuccess: false, message: e.message, context: context);
       return null;
     }
   }
@@ -31,12 +24,8 @@ class Authentication {
   Register_With_Email_password(
       {String email, String password, BuildContext context}) async {
     try {
-      loader.loading(context);
-
       final register = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
-
-      Navigator.pop(context);
 
       await DatabaseService(uid: register.user.uid).updateUser(UserModel(
         uid: register.user.uid,
@@ -45,12 +34,8 @@ class Authentication {
       ));
 
       await DatabaseService(uid: register.user.uid).createBalance();
-
-      final User user = register.user;
-    } catch (e) {
-      Navigator.pop(context);
-      Alert()
-          .showAlert(isSuccess: false, message: e.toString(), context: context);
+    } on FirebaseAuthException catch (e) {
+      Alert().showAlert(isSuccess: false, message: e.message, context: context);
       return null;
     }
   }
@@ -62,8 +47,8 @@ class Authentication {
   Future signOut() async {
     try {
       return await _auth.signOut();
-    } catch (e) {
-      print(e.toString());
+    } on FirebaseAuthException catch (e) {
+      print(e.message);
       return null;
     }
   }

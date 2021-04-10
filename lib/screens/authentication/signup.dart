@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:plastiex/screens/authentication/signin.dart';
 import 'package:plastiex/services/auth_service.dart';
 import 'package:plastiex/size_configuration/size_config.dart';
+import 'package:plastiex/ui/colors.dart';
 
 class RegisterScreen extends StatefulWidget {
   final Function toggleAuth;
@@ -17,6 +18,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController emailController = TextEditingController();
 
   final TextEditingController passwordController = TextEditingController();
+
+  ValueNotifier _isLoading = ValueNotifier<bool>(false);
 
   @override
   Widget build(BuildContext context) {
@@ -98,19 +101,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     InkWell(
                       onTap: () async {
-                        try {
-                          final newUser = await Authentication()
-                              .Register_With_Email_password(
-                            email: emailController.text,
-                            password: passwordController.text,
-                            context: context,
-                          );
-                          print(newUser.uid);
-                          //TODO - SnackBar
-                        } catch (e) {
-                          print(e);
-                          //TODO - SnackBar
-                        }
+                        _isLoading.value = true;
+
+                        await Authentication().Register_With_Email_password(
+                          email: emailController.text,
+                          password: passwordController.text,
+                          context: context,
+                        );
+
+                        _isLoading.value = false;
                       },
                       child: Container(
                         height: GetHeight(44),
@@ -135,6 +134,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       },
                       child: Text("Alreadyhave an account? Sign In"),
                     ),
+                    ValueListenableBuilder(
+                        valueListenable: _isLoading,
+                        builder: (context, _, __) {
+                          if (_isLoading.value)
+                            return Container(
+                              height: 40.0,
+                              width: 40.0,
+                              margin: EdgeInsets.all(10.0),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 7,
+                                valueColor:
+                                    AlwaysStoppedAnimation(primaryColor),
+                              ),
+                            );
+                          else
+                            return SizedBox();
+                        })
                   ],
                 ),
               ),

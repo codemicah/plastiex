@@ -230,28 +230,50 @@ class SubmissionTable {
             Text("${submission.date.toString().split(' ')[0]}")
           ]),
           SizedBox(height: 20.0),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-            ElevatedButton(
-              child: Text("Confirm"),
-              onPressed: submission.isPending
-                  ? () async {
-                      await DatabaseService(uid: _auth.currentUser.uid)
-                          .confirmSubmission(submission, context);
-                      Navigator.pop(context);
-                    }
-                  : null,
-              style: ButtonStyle().copyWith(
-                backgroundColor: MaterialStateProperty.all(green),
+          SizedBox(
+            height: 50.0,
+            child: StreamBuilder<bool>(
+              stream: Stream.fromFuture(
+                DatabaseService(uid: _auth.currentUser.uid).isAdmin(),
               ),
+              builder: (context, snapshot) {
+                if (snapshot.hasError)
+                  return Text("...");
+                else if (!snapshot.hasData)
+                  return Text("Please wait...");
+                else
+                  return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        snapshot.data
+                            ? ElevatedButton(
+                                child: Text("Confirm"),
+                                onPressed: submission.isPending
+                                    ? () async {
+                                        await DatabaseService(
+                                                uid: _auth.currentUser.uid)
+                                            .confirmSubmission(
+                                                submission, context);
+                                        Navigator.pop(context);
+                                      }
+                                    : null,
+                                style: ButtonStyle().copyWith(
+                                  backgroundColor:
+                                      MaterialStateProperty.all(green),
+                                ),
+                              )
+                            : SizedBox(),
+                        ElevatedButton(
+                          style: ButtonStyle().copyWith(
+                            backgroundColor: MaterialStateProperty.all(red),
+                          ),
+                          child: Text("Close"),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ]);
+              },
             ),
-            ElevatedButton(
-              style: ButtonStyle().copyWith(
-                backgroundColor: MaterialStateProperty.all(red),
-              ),
-              child: Text("Close"),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ]),
+          )
         ],
       ),
     );

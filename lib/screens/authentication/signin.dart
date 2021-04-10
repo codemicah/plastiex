@@ -1,10 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:plastiex/screens/authentication/auth_wrapper.dart';
-import 'package:plastiex/screens/authentication/signup.dart';
 import 'package:plastiex/services/auth_service.dart';
 import 'package:plastiex/size_configuration/size_config.dart';
+import 'package:plastiex/ui/colors.dart';
 
 class LoginScreen extends StatefulWidget {
   final Function toggleAuth;
@@ -19,6 +17,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
 
   final TextEditingController passwordController = TextEditingController();
+
+  ValueNotifier _isLoading = ValueNotifier<bool>(false);
 
   @override
   Widget build(BuildContext context) {
@@ -96,13 +96,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     InkWell(
                       onTap: () async {
-                        final userReg = await Authentication().SignInWithEmail(
+                        _isLoading.value = true;
+                        await Authentication().SignInWithEmail(
                           email: emailController.text,
                           password: passwordController.text,
                           context: context,
                         );
-
-                        final User userDetails = userReg.user;
+                        _isLoading.value = false;
                       },
                       child: Container(
                         height: GetHeight(44),
@@ -127,6 +127,23 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       child: Text("Don't have an account? Sign up"),
                     ),
+                    ValueListenableBuilder(
+                        valueListenable: _isLoading,
+                        builder: (context, _, __) {
+                          if (_isLoading.value)
+                            return Container(
+                              height: 40.0,
+                              width: 40.0,
+                              margin: EdgeInsets.all(10.0),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 7,
+                                valueColor:
+                                    AlwaysStoppedAnimation(primaryColor),
+                              ),
+                            );
+                          else
+                            return SizedBox();
+                        })
                   ],
                 ),
               ),

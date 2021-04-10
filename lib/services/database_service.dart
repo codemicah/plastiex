@@ -153,7 +153,7 @@ class DatabaseService {
             .update({"balance": balance - int.parse(amount)});
 
         await Alert().showAlert(
-            context: context, message: "Withdrawal of $amount successful");
+            context: context, message: "Withdrawal of N$amount successful");
         return true;
       }
     } catch (e) {
@@ -352,11 +352,24 @@ class DatabaseService {
           .doc(submission.user)
           .update({"balance": newBalance});
       return Alert().showAlert(message: "Success", context: context);
-    } catch (e) {
+    } on FirebaseException catch (e) {
       print(e.toString());
-      Alert()
-          .showAlert(message: e.toString(), context: context, isSuccess: false);
+      Alert().showAlert(message: e.message, context: context, isSuccess: false);
       return null;
+    }
+  }
+
+  // check if user is an admin
+  Future<bool> isAdmin() async {
+    try {
+      final document = await adminCollection.doc(uid);
+      if (document != null)
+        return true;
+      else
+        return false;
+    } on FirebaseException catch (e) {
+      print(e.message);
+      return false;
     }
   }
 }
