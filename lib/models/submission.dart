@@ -1,5 +1,5 @@
 class Submission {
-  final String name, user, avartar, type, location, price;
+  final String name, user, avartar, type, location, price, id;
   final int quantity, worth, capacity;
   final bool isPending;
   final DateTime date;
@@ -16,5 +16,6 @@ class Submission {
     this.date,
     this.location,
     this.price = "0",
+    this.id = "",
   });
 }

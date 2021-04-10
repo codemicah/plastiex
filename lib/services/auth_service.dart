@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:plastiex/models/user.dart';
 import 'package:plastiex/screens/home/home.dart';
 import 'package:plastiex/services/database_service.dart';
 import 'package:plastiex/ui/alert.dart';
@@ -34,19 +35,19 @@ class Authentication {
       loader.loading(context);
 
       final register = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+          email: email, password: password);
 
-      await DatabaseService(uid: register.user.uid).updateUser();
+      await DatabaseService(uid: register.user.uid).updateUser(UserModel(
+        uid: register.user.uid,
+        displayName: "",
+        email: register.user.email,
+      ));
 
       await DatabaseService(uid: register.user.uid).createBalance();
 
       final User user = register.user;
 
       Navigator.pop(context);
-      Navigator.of(context)
-          .pushReplacement(MaterialPageRoute(builder: (context) => Home()));
     } catch (e) {
       Navigator.pop(context);
       Alert()

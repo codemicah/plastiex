@@ -23,18 +23,7 @@ class _RankingsState extends State<Rankings> {
         height: SizeConfig.screenheight,
         child: DatabaseService(uid: _auth.currentUser.uid)
             .getAllSubmissions(context),
-      )
-          // Container(
-          //   width: SizeConfig.screenWidth,
-          //   child: SingleChildScrollView(
-          //     physics: AlwaysScrollableScrollPhysics(),
-          //     child: Column(
-          //       crossAxisAlignment: CrossAxisAlignment.stretch,
-          //       children: rankings.map((rank) => _getRank(rank)).toList(),
-          //     ),
-          //   ),
-          // ),
-          ),
+      )),
     );
   }
 }

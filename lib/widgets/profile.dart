@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:plastiex/models/submission.dart';
+import 'package:plastiex/models/user.dart';
 import 'package:plastiex/services/auth_service.dart';
 import 'package:plastiex/services/database_service.dart';
 import 'package:plastiex/size_configuration/size_config.dart';
@@ -39,7 +40,9 @@ class Profile extends StatelessWidget {
                     icon: Icon(
                       Icons.edit,
                     ),
-                    onPressed: () {},
+                    onPressed: () async {
+                      await _showEditNameDialog(context);
+                    },
                   ),
                   Row(
                     children: [
@@ -82,12 +85,7 @@ class Profile extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 5.0),
-                    Text(
-                      "${user.displayName == null || user.displayName.isEmpty ? user.email : user.displayName}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    DatabaseService(uid: user.uid).getUserData("displayName"),
                     SizedBox(height: 5.0),
                     DatabaseService(uid: user.uid).getBalance(context),
                     SizedBox(height: 5.0),
@@ -130,7 +128,7 @@ class Profile extends StatelessWidget {
                     ),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: SubmissionTable(uid: user.uid)
+                      child: SubmissionTable(uid: user.uid, context: context)
                           .makeTable(is_pending: false),
                     ),
                     Divider(
@@ -152,13 +150,15 @@ class Profile extends StatelessWidget {
                     ),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: SubmissionTable(uid: user.uid).makeTable(),
+                      child: SubmissionTable(uid: user.uid, context: context)
+                          .makeTable(),
                     ),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: SingleChildScrollView(
                         scrollDirection: Axis.vertical,
-                        child: SubmissionTable(uid: user.uid).adminTable(),
+                        child: SubmissionTable(uid: user.uid, context: context)
+                            .adminTable(),
                       ),
                     )
                   ],
@@ -213,6 +213,57 @@ class Profile extends StatelessWidget {
                       ],
                     ),
                   ),
+                ),
+              ),
+            ));
+  }
+
+  Future _showEditNameDialog(BuildContext context) async {
+    final _formKey = GlobalKey<FormState>();
+    TextEditingController _displayNameController = TextEditingController();
+
+    return showDialog(
+        context: context,
+        builder: (context) => Dialog(
+              child: GestureDetector(
+                onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+                child: Container(
+                  padding: EdgeInsets.all(30.0),
+                  child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextFormField(
+                            controller: _displayNameController,
+                            validator: (value) => value.length < 5
+                                ? "Name must be at least 5 chars"
+                                : null,
+                            decoration: InputDecoration(
+                                labelText: "FIrstname Lastname"),
+                          ),
+                          ElevatedButton(
+                              style: ButtonStyle().copyWith(
+                                backgroundColor:
+                                    MaterialStateProperty.all(primaryColor),
+                                foregroundColor:
+                                    MaterialStateProperty.all(Colors.black),
+                              ),
+                              onPressed: () async {
+                                if (_formKey.currentState.validate()) {
+                                  await DatabaseService(uid: user.uid)
+                                      .updateUser(UserModel(
+                                    uid: user.uid,
+                                    email: user.email,
+                                    displayName: _displayNameController.text,
+                                  ));
+
+                                  Navigator.pop(context);
+                                }
+                              },
+                              child: Text("Update")),
+                        ],
+                      )),
                 ),
               ),
             ));
@@ -316,7 +367,7 @@ class Profile extends StatelessWidget {
                               context: context);
                         } else {
                           Alert().showAlert(
-                              message: "Submission request added",
+                              message: "Something went wrong",
                               context: context,
                               isSuccess: false);
                         }

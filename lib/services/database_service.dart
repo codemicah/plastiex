@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:plastiex/models/ranking.dart';
 import 'package:plastiex/models/submission.dart';
+import 'package:plastiex/models/user.dart';
 import 'package:plastiex/ui/alert.dart';
 import 'package:plastiex/ui/colors.dart';
 
@@ -26,8 +27,16 @@ class DatabaseService {
   CollectionReference adminCollection =
       FirebaseFirestore.instance.collection("admins");
 
+  CollectionReference settingCollection =
+      FirebaseFirestore.instance.collection("settings");
+
   Future createSubmission(Submission submission) async {
     try {
+      final worth = await (await settingCollection.doc("price_setting").get())
+          .get(submission.capacity.toString());
+
+      final double price = worth * submission.capacity;
+
       final data = {
         "user": uid,
         "capacity": submission.capacity,
@@ -37,7 +46,7 @@ class DatabaseService {
         "created_at": DateTime.now(),
         "submission_date": submission.date,
         "type": submission.type,
-        "price": submission.price,
+        "price": price,
       };
       Map<String, Object> subData = HashMap.from(data);
       final document = await submissionCollection.add(subData);
@@ -54,10 +63,33 @@ class DatabaseService {
     print(user.data());
   }
 
-  Future updateUser({String name, String avatar}) async {
+  Widget getUserData(value) {
+    return StreamBuilder(
+        stream: userCollection.doc(uid).snapshots(),
+        builder:
+            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.hasError)
+            return Text("Error");
+          else if (!snapshot.hasData)
+            return Text("Loading...");
+          else
+            return Text(snapshot.data.get(value) == ""
+                ? snapshot.data.get("email")
+                : snapshot.data.get(value));
+        });
+  }
+
+  Future updateUser(UserModel user) async {
     try {
-      await _auth.currentUser
-          .updateProfile(displayName: name, photoURL: avatar);
+      Map data = {
+        "email": user.email,
+        "uid": user.uid,
+        "displayName": user.displayName,
+        "createdAt": Timestamp.now()
+      };
+
+      HashMap<String, Object> userData = HashMap.from(data);
+      await userCollection.doc(uid).set(userData);
     } catch (e) {
       print(e);
       return null;
@@ -82,7 +114,9 @@ class DatabaseService {
       stream: balanceCollection.doc(uid).snapshots(),
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (!snapshot.hasData)
+        if (snapshot.hasError)
+          return Text("Error");
+        else if (!snapshot.hasData)
           return SizedBox(
             height: 10.0,
             width: 10.0,
@@ -90,10 +124,8 @@ class DatabaseService {
               valueColor: AlwaysStoppedAnimation(primaryColor),
             ),
           );
-        else if (snapshot.hasError)
-          return Text("Error");
-        else if (snapshot.data.data().isEmpty)
-          return Text("no data");
+        else if (snapshot.data.data() == null || snapshot.data.data().isEmpty)
+          return Text("...");
         else
           return Text("N${snapshot.data.get('balance')}");
       },
@@ -110,14 +142,20 @@ class DatabaseService {
             isSuccess: false,
             context: context,
             message: 'Insufficient balance');
+      else if (int.parse(amount) < 1000)
+        return Alert().showAlert(
+            isSuccess: false,
+            context: context,
+            message: 'Minimum withdrawal amount is N1000');
+      else {
+        await balanceCollection
+            .doc(uid)
+            .update({"balance": balance - int.parse(amount)});
 
-      await balanceCollection
-          .doc(uid)
-          .update({"balance": balance - int.parse(amount)});
-
-      await Alert().showAlert(
-          context: context, message: "Withdrawal of $amount successful");
-      return true;
+        await Alert().showAlert(
+            context: context, message: "Withdrawal of $amount successful");
+        return true;
+      }
     } catch (e) {
       print(e);
       return null;
@@ -133,7 +171,10 @@ class DatabaseService {
         if (snapshot.hasError)
           return Center(child: Text("An error occurred"));
         else if (!snapshot.hasData)
-          return Center(child: CircularProgressIndicator());
+          return Center(
+              child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation(primaryColor),
+          ));
         else if (snapshot.data.docs.isEmpty)
           return Center(child: Text("No data"));
         else {
@@ -151,7 +192,7 @@ class DatabaseService {
                 quantity: data["quantity"],
                 user: data["user"],
                 capacity: data["capacity"],
-                price: data["price"],
+                price: data["price"].toString(),
                 isPending: data["is_pending"],
                 date: data["date"],
                 location: data["location"],
@@ -160,7 +201,6 @@ class DatabaseService {
 
           List<Ranking> rankings = [];
           for (int i = 0; i < users.length; i++) {
-            print("++++++++++++++++++++++");
             List<Submission> count = submissions
                 .where((element) => element.user == users[i])
                 .toList();
@@ -293,5 +333,16 @@ class DatabaseService {
         }
       },
     );
+  }
+
+  Future confirmSubmission(String subId, BuildContext context) async {
+    try {
+      await submissionCollection.doc(subId).update({"is_pending": false});
+      return true;
+    } catch (e) {
+      print(e.toString());
+      Alert().showAlert(message: e.toString(), context: context);
+      return null;
+    }
   }
 }

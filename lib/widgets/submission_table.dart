@@ -1,19 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:plastiex/models/submission.dart';
+import 'package:plastiex/services/database_service.dart';
 import 'package:plastiex/size_configuration/size_config.dart';
 import 'package:plastiex/ui/colors.dart';
 
 class SubmissionTable {
   final String uid;
+  final BuildContext context;
 
-  SubmissionTable({@required this.uid});
+  SubmissionTable({@required this.uid, @required this.context});
 
   CollectionReference submissionCollection =
       FirebaseFirestore.instance.collection("submissions");
 
   CollectionReference adminCollection =
       FirebaseFirestore.instance.collection("admins");
+
+  FirebaseAuth _auth = FirebaseAuth.instance;
 
   Widget makeTable({bool is_pending = true}) {
     return StreamBuilder(
@@ -65,7 +70,8 @@ class SubmissionTable {
                           elevation: 5,
                           context: context,
                           builder: (context) => submissionDetails(
-                              parseSubmission(document.data()), context)),
+                              parseSubmission(document.data(), document.id),
+                              context)),
                       cells: [
                         DataCell(Text("${document.data()['type']}")),
                         DataCell(Text("${document.data()['quantity']}")),
@@ -149,7 +155,8 @@ class SubmissionTable {
                                     elevation: 5,
                                     context: context,
                                     builder: (context) => submissionDetails(
-                                        parseSubmission(document.data()),
+                                        parseSubmission(
+                                            document.data(), document.id),
                                         context)),
                                 cells: [
                                   DataCell(
@@ -171,18 +178,18 @@ class SubmissionTable {
         });
   }
 
-  Submission parseSubmission(Map<String, dynamic> data) {
+  Submission parseSubmission(Map<String, dynamic> data, String id) {
     print(Timestamp.now());
     return Submission(
-      quantity: data["quantity"],
-      user: data["user"],
-      capacity: data["capacity"],
-      price: data["price"],
-      isPending: data["is_pending"],
-      date: data["date"],
-      location: data["location"],
-      type: data["type"],
-    );
+        quantity: data["quantity"],
+        user: data["user"],
+        capacity: data["capacity"],
+        price: data["price"].toString(),
+        isPending: data["is_pending"],
+        date: data["date"],
+        location: data["location"],
+        type: data["type"],
+        id: id);
   }
 
   Widget submissionDetails(Submission submission, BuildContext context) {
@@ -205,7 +212,12 @@ class SubmissionTable {
           Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
             ElevatedButton(
               child: Text("Confirm"),
-              onPressed: submission.isPending ? () {} : null,
+              onPressed: submission.isPending
+                  ? () async {
+                      await DatabaseService(uid: _auth.currentUser.uid)
+                          .confirmSubmission(submission.id, context);
+                    }
+                  : null,
               style: ButtonStyle().copyWith(
                 backgroundColor: MaterialStateProperty.all(green),
               ),
