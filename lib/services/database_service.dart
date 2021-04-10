@@ -342,17 +342,15 @@ class DatabaseService {
           .update({"is_pending": false});
 
       final double balance = double.parse(
-          await (await balanceCollection.doc(uid).get())
+          await (await balanceCollection.doc(submission.user).get())
               .get("balance")
               .toString());
 
-      print(balance);
-
       final double newBalance = double.parse(submission.price) + balance;
 
-      print(newBalance);
-
-      await balanceCollection.doc(uid).update({"balance": newBalance});
+      await balanceCollection
+          .doc(submission.user)
+          .update({"balance": newBalance});
       return Alert().showAlert(message: "Success", context: context);
     } catch (e) {
       print(e.toString());
