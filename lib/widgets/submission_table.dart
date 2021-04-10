@@ -179,20 +179,22 @@ class SubmissionTable {
   }
 
   Submission parseSubmission(Map<String, dynamic> data, String id) {
-    print(Timestamp.now());
     return Submission(
         quantity: data["quantity"],
         user: data["user"],
         capacity: data["capacity"],
         price: data["price"].toString(),
         isPending: data["is_pending"],
-        date: data["date"],
+        date: data["submission_date"].toDate(), // convert timestamp to datetime
         location: data["location"],
         type: data["type"],
         id: id);
   }
 
+// content of bottom sheet showing submission details
   Widget submissionDetails(Submission submission, BuildContext context) {
+    TextStyle __keyStyle = TextStyle().copyWith(fontWeight: FontWeight.w600);
+
     return Container(
       width: SizeConfig.screenWidth,
       padding: EdgeInsets.all(30.0),
@@ -202,12 +204,31 @@ class SubmissionTable {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(children: [Text("Type: "), Text(submission.type)]),
-          Row(children: [Text("Quantity: "), Text("${submission.quantity}")]),
-          Row(children: [Text("Capacity: "), Text("${submission.capacity}cl")]),
-          Row(children: [Text("Price: "), Text("N${submission.price}")]),
-          Row(children: [Text("Location: "), Text("${submission.location}")]),
-          Row(children: [Text("Date: "), Text("${submission.date}")]),
+          Row(children: [
+            Text("Type: ", style: __keyStyle),
+            Text(submission.type)
+          ]),
+          Row(children: [
+            Text("Quantity: ", style: __keyStyle),
+            Text("${submission.quantity}")
+          ]),
+          Row(children: [
+            Text("Capacity: ", style: __keyStyle),
+            Text("${submission.capacity}cl")
+          ]),
+          Row(children: [
+            Text("Price: ", style: __keyStyle),
+            Text("N${submission.price}")
+          ]),
+          Row(children: [
+            Text("Location: ", style: __keyStyle),
+            Text("${submission.location}")
+          ]),
+          Row(children: [
+            Text("Date: ", style: __keyStyle),
+            // split ti remove time from datetime
+            Text("${submission.date.toString().split(' ')[0]}")
+          ]),
           SizedBox(height: 20.0),
           Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
             ElevatedButton(
@@ -215,7 +236,8 @@ class SubmissionTable {
               onPressed: submission.isPending
                   ? () async {
                       await DatabaseService(uid: _auth.currentUser.uid)
-                          .confirmSubmission(submission.id, context);
+                          .confirmSubmission(submission, context);
+                      Navigator.pop(context);
                     }
                   : null,
               style: ButtonStyle().copyWith(

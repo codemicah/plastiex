@@ -335,13 +335,29 @@ class DatabaseService {
     );
   }
 
-  Future confirmSubmission(String subId, BuildContext context) async {
+  Future confirmSubmission(Submission submission, BuildContext context) async {
     try {
-      await submissionCollection.doc(subId).update({"is_pending": false});
-      return true;
+      await submissionCollection
+          .doc(submission.id)
+          .update({"is_pending": false});
+
+      final double balance = double.parse(
+          await (await balanceCollection.doc(uid).get())
+              .get("balance")
+              .toString());
+
+      print(balance);
+
+      final double newBalance = double.parse(submission.price) + balance;
+
+      print(newBalance);
+
+      await balanceCollection.doc(uid).update({"balance": newBalance});
+      return Alert().showAlert(message: "Success", context: context);
     } catch (e) {
       print(e.toString());
-      Alert().showAlert(message: e.toString(), context: context);
+      Alert()
+          .showAlert(message: e.toString(), context: context, isSuccess: false);
       return null;
     }
   }
