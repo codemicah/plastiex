@@ -1,12 +1,23 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:plastiex/screens/authentication/auth_wrapper.dart';
 import 'package:plastiex/screens/authentication/signup.dart';
 import 'package:plastiex/services/auth_service.dart';
 import 'package:plastiex/size_configuration/size_config.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  final Function toggleAuth;
+
+  LoginScreen({this.toggleAuth});
+
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
+
   final TextEditingController passwordController = TextEditingController();
 
   @override
@@ -85,23 +96,13 @@ class LoginScreen extends StatelessWidget {
                     ),
                     InkWell(
                       onTap: () async {
-                        print("checking cred");
-                        try {
-                          final userReg =
-                              await Authentication().SignInWithEmail(
-                            email: emailController.text,
-                            password: passwordController.text,
-                            context: context,
-                          );
+                        final userReg = await Authentication().SignInWithEmail(
+                          email: emailController.text,
+                          password: passwordController.text,
+                          context: context,
+                        );
 
-                          final User userDetails = userReg.user;
-
-                          print("........");
-                          print("${userDetails.uid}");
-                        } catch (e) {
-                          print(e);
-                          //TODO - a SnackBar would be nice here
-                        }
+                        final User userDetails = userReg.user;
                       },
                       child: Container(
                         height: GetHeight(44),
@@ -121,10 +122,9 @@ class LoginScreen extends StatelessWidget {
                       height: GetHeight(16),
                     ),
                     InkWell(
-                      onTap: () => Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => RegisterScreen())),
+                      onTap: () {
+                        widget.toggleAuth();
+                      },
                       child: Text("Don't have an account? Sign up"),
                     ),
                   ],

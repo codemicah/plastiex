@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:plastiex/screens/authentication/signin.dart';
+import 'package:plastiex/screens/authentication/auth_wrapper.dart';
 import 'package:plastiex/screens/home/home.dart';
 
 class Wrapper extends StatelessWidget {
@@ -13,7 +13,7 @@ class Wrapper extends StatelessWidget {
           if (snapshot.hasData) {
             return Home();
           } else {
-            return LoginScreen();
+            return AuthWrapper();
           }
         });
   }

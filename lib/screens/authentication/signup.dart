@@ -4,8 +4,18 @@ import 'package:plastiex/screens/authentication/signin.dart';
 import 'package:plastiex/services/auth_service.dart';
 import 'package:plastiex/size_configuration/size_config.dart';
 
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
+  final Function toggleAuth;
+
+  RegisterScreen({this.toggleAuth});
+
+  @override
+  _RegisterScreenState createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController emailController = TextEditingController();
+
   final TextEditingController passwordController = TextEditingController();
 
   @override
@@ -120,10 +130,9 @@ class RegisterScreen extends StatelessWidget {
                       height: GetHeight(16),
                     ),
                     InkWell(
-                      onTap: () => Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => LoginScreen())),
+                      onTap: () {
+                        widget.toggleAuth();
+                      },
                       child: Text("Alreadyhave an account? Sign In"),
                     ),
                   ],
