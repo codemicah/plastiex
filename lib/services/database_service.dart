@@ -362,8 +362,8 @@ class DatabaseService {
   // check if user is an admin
   Future<bool> isAdmin() async {
     try {
-      final document = await adminCollection.doc(uid);
-      if (document != null)
+      final document = await adminCollection.doc(uid).get();
+      if (document.exists)
         return true;
       else
         return false;

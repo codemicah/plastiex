@@ -308,14 +308,38 @@ class Profile extends StatelessWidget {
                         : null,
                   ),
                   SizedBox(height: 5.0),
-                  TextFormField(
-                    controller: capacityController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(labelText: "Capacity (cl)"),
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) => value.isEmpty || int.parse(value) < 50
-                        ? "must be of 50cl+"
-                        : null,
+                  DropdownButtonFormField(
+                    elevation: 2,
+                    decoration: InputDecoration(labelText: "Capacity"),
+                    items: [
+                      DropdownMenuItem(
+                        child: Text("50cl"),
+                        value: 50,
+                      ),
+                      DropdownMenuItem(
+                        child: Text("60cl"),
+                        value: 60,
+                      ),
+                      DropdownMenuItem(
+                        child: Text("65cl"),
+                        value: 65,
+                      ),
+                      DropdownMenuItem(
+                        child: Text("70cl"),
+                        value: 70,
+                      ),
+                      DropdownMenuItem(
+                        child: Text("75cl"),
+                        value: 75,
+                      )
+                    ],
+                    validator: (value) =>
+                        value == null || value.toString().isEmpty
+                            ? "Invalid selection"
+                            : null,
+                    onChanged: (value) {
+                      capacityController.text = value.toString();
+                    },
                   ),
                   SizedBox(height: 5.0),
                   TextFormField(
