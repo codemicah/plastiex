@@ -226,7 +226,7 @@ class SubmissionTable {
           ]),
           Row(children: [
             Text("Location: ", style: __keyStyle),
-            Text("${submission.location}")
+            Expanded(child: Text("${submission.location}"))
           ]),
           Row(children: [
             Text("Date: ", style: __keyStyle),

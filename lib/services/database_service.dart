@@ -351,10 +351,10 @@ class DatabaseService {
 
       final double balance =
           await (await balanceCollection.doc(submission.user).get())
-              .get("balance");
+              .data()["balance"];
 
-      dynamic newBalance = double.parse(submission.price) + balance;
-      newBalance = newBalance.toStringAsFixed(2);
+      double newBalance = double.parse(submission.price) + balance;
+      newBalance = double.parse(newBalance.toStringAsFixed(2));
 
       await balanceCollection
           .doc(submission.user)
