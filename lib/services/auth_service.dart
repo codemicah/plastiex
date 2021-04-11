@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:plastiex/models/user.dart';
 import 'package:plastiex/services/database_service.dart';
 import 'package:plastiex/ui/alert.dart';
-import 'package:plastiex/ui/loader.dart';
 
 class Authentication {
   final FirebaseAuth _auth = FirebaseAuth.instance;

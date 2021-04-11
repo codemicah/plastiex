@@ -32,10 +32,12 @@ class DatabaseService {
 
   Future createSubmission(Submission submission) async {
     try {
-      final worth = await (await settingCollection.doc("price_setting").get())
-          .get(submission.capacity.toString());
+      final double worth =
+          await (await settingCollection.doc("price_setting").get())
+              .get(submission.capacity.toString());
 
-      final double price = worth * submission.capacity;
+      dynamic price = worth * submission.capacity;
+      price = price.toStringAsFixed(2);
 
       final data = {
         "user": uid,
@@ -71,6 +73,8 @@ class DatabaseService {
           if (snapshot.hasError)
             return Text("Error");
           else if (!snapshot.hasData)
+            return Text("Loading...");
+          else if (!snapshot.data.exists)
             return Text("Loading...");
           else
             return Text(snapshot.data.get(value) == ""
@@ -197,7 +201,7 @@ class DatabaseService {
             valueColor: AlwaysStoppedAnimation(primaryColor),
           ));
         else if (snapshot.data.docs.isEmpty)
-          return Center(child: Text("No data"));
+          return Center(child: Text("Nothing here yet😢"));
         else {
           List<String> users = snapshot.data.docs
               .map((doc) => doc.data()["user"].toString())
@@ -350,12 +354,14 @@ class DatabaseService {
           .doc(submission.id)
           .update({"is_pending": false});
 
-      final double balance = double.parse(
+      final double balance =
           await (await balanceCollection.doc(submission.user).get())
-              .get("balance")
-              .toString());
+              .get("balance");
 
-      final double newBalance = double.parse(submission.price) + balance;
+      dynamic newBalance = double.parse(submission.price) + balance;
+      newBalance = newBalance.toStringAsFixed(2);
+
+      print(newBalance);
 
       await balanceCollection
           .doc(submission.user)

@@ -47,12 +47,12 @@ class SubmissionTable {
                   label: Text('Type'),
                 ),
                 DataColumn(
-                  onSort: (i, b) {
-                    print(i);
-                    print(b);
-                  },
                   numeric: true,
                   label: Text('Quantity'),
+                ),
+                DataColumn(
+                  numeric: true,
+                  label: Text('Capacity(cl)'),
                 ),
                 DataColumn(
                   numeric: true,
@@ -75,7 +75,8 @@ class SubmissionTable {
                       cells: [
                         DataCell(Text("${document.data()['type']}")),
                         DataCell(Text("${document.data()['quantity']}")),
-                        DataCell(Text("${document.data()['price']}"))
+                        DataCell(Text("${document.data()['capacity']}")),
+                        DataCell(Text("${document.data()['price'].toString()}"))
                       ]);
               }).toList(),
             );
@@ -126,10 +127,10 @@ class SubmissionTable {
                             MaterialStateProperty.all(Color(0xffFFDB47)),
                         columns: [
                           DataColumn(
-                            onSort: (i, b) {
-                              print(i);
-                              print(b);
-                            },
+                            numeric: true,
+                            label: Text('Capacity(cl)'),
+                          ),
+                          DataColumn(
                             numeric: true,
                             label: Text('Quantity'),
                           ),
@@ -160,8 +161,11 @@ class SubmissionTable {
                                         context)),
                                 cells: [
                                   DataCell(
+                                      Text("${document.data()['capacity']}")),
+                                  DataCell(
                                       Text("${document.data()['quantity']}")),
-                                  DataCell(Text("${document.data()['price']}")),
+                                  DataCell(Text(
+                                      "${document.data()['price'].toString()}")),
                                   DataCell(Text(
                                       "${document.data()['is_pending'].toString().toUpperCase()}")),
                                 ]);
