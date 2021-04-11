@@ -119,6 +119,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     SizedBox(
+                      height: GetHeight(5),
+                    ),
+                    InkWell(
+                      onTap: () {},
+                      child: Text(
+                        "forgot password",
+                        style: TextStyle().copyWith(fontSize: 17.0),
+                      ),
+                    ),
+                    SizedBox(
                       height: GetHeight(16),
                     ),
                     InkWell(

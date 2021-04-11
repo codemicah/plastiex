@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:plastiex/ui/colors.dart';
 import 'package:plastiex/widgets/home_widget.dart';
 import 'package:plastiex/widgets/profile.dart';
 import 'package:plastiex/widgets/rankings.dart';

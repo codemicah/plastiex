@@ -162,6 +162,27 @@ class DatabaseService {
     }
   }
 
+  Widget getDisplayName(Ranking ranking) {
+    return StreamBuilder(
+        stream: userCollection.doc(ranking.uid).snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError)
+            return SizedBox();
+          else if (!snapshot.hasData)
+            return SizedBox();
+          else
+            return Text(
+              snapshot.data.get("displayName") != ""
+                  ? snapshot.data.get("displayName")
+                  : "User", //
+              style: TextStyle().copyWith(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+              ),
+            );
+        });
+  }
+
   Widget getAllSubmissions(BuildContext context) {
     return StreamBuilder(
       stream: submissionCollection
@@ -238,13 +259,7 @@ class DatabaseService {
                           radius: 40,
                           backgroundImage: AssetImage('assets/imgs/avatar.jpg'),
                         ),
-                        Text(
-                          "No Name ${i + 1}", //
-                          style: TextStyle().copyWith(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        getDisplayName(rankings[i]),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -295,13 +310,7 @@ class DatabaseService {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  "No Name ${i + 1}",
-                                  style: TextStyle().copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 17,
-                                  ),
-                                ),
+                                getDisplayName(rankings[i]),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
