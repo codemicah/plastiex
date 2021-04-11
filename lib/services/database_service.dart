@@ -36,8 +36,8 @@ class DatabaseService {
           await (await settingCollection.doc("price_setting").get())
               .get(submission.capacity.toString());
 
-      dynamic price = worth * submission.capacity;
-      price = price.toStringAsFixed(2);
+      double price = worth * submission.capacity;
+      price = double.parse(price.toStringAsFixed(2));
 
       final data = {
         "user": uid,
@@ -63,7 +63,7 @@ class DatabaseService {
     final user = await userCollection.doc(userId).get();
   }
 
-  Widget getUserData(value) {
+  Widget getUserData(String value, TextStyle style) {
     return StreamBuilder(
         stream: userCollection.doc(uid).snapshots(),
         builder:
@@ -75,9 +75,12 @@ class DatabaseService {
           else if (!snapshot.data.exists)
             return Text("Loading...");
           else
-            return Text(snapshot.data.get(value) == ""
-                ? snapshot.data.get("email")
-                : snapshot.data.get(value));
+            return Text(
+              snapshot.data.get(value) == ""
+                  ? snapshot.data.get("email")
+                  : snapshot.data.get(value),
+              style: style,
+            );
         });
   }
 
@@ -99,7 +102,7 @@ class DatabaseService {
 
   Future createBalance() async {
     try {
-      final Map data = {"balance": 0.0};
+      final Map data = {"balance": 0};
       final HashMap<String, Object> userData = HashMap.from(data);
       final document = await balanceCollection.doc(uid).set(userData);
 

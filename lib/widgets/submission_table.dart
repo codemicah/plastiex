@@ -208,6 +208,18 @@ class SubmissionTable {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                  child: DatabaseService(uid: submission.user).getUserData(
+                "email",
+                TextStyle().copyWith(fontSize: 22.0),
+              ))
+            ],
+          ),
+          Divider(),
           Row(children: [
             Text("Type: ", style: __keyStyle),
             Text(submission.type)
@@ -224,7 +236,7 @@ class SubmissionTable {
             Text("Price: ", style: __keyStyle),
             Text("N${submission.price}")
           ]),
-          Row(children: [
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text("Location: ", style: __keyStyle),
             Expanded(child: Text("${submission.location}"))
           ]),

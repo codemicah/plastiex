@@ -85,7 +85,8 @@ class Profile extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 5.0),
-                    DatabaseService(uid: user.uid).getUserData("displayName"),
+                    DatabaseService(uid: user.uid)
+                        .getUserData("displayName", TextStyle().copyWith()),
                     SizedBox(height: 5.0),
                     DatabaseService(uid: user.uid).getBalance(context),
                     SizedBox(height: 5.0),
