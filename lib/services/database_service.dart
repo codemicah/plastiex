@@ -32,12 +32,10 @@ class DatabaseService {
 
   Future createSubmission(Submission submission) async {
     try {
-      final double worth =
+      final int worth =
           await (await settingCollection.doc("price_setting").get())
               .get(submission.capacity.toString());
-
-      double price = worth * submission.capacity;
-      price = double.parse(price.toStringAsFixed(2));
+      int price = worth * submission.capacity;
 
       final data = {
         "user": uid,
@@ -352,12 +350,11 @@ class DatabaseService {
           .doc(submission.id)
           .update({"is_pending": false});
 
-      final double balance =
+      final int balance =
           await (await balanceCollection.doc(submission.user).get())
               .data()["balance"];
 
-      double newBalance = double.parse(submission.price) + balance;
-      newBalance = double.parse(newBalance.toStringAsFixed(2));
+      int newBalance = int.parse(submission.price) + balance;
 
       await balanceCollection
           .doc(submission.user)
