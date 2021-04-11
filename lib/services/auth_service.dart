@@ -47,7 +47,6 @@ class Authentication {
     try {
       return await _auth.signOut();
     } on FirebaseAuthException catch (e) {
-      print(e.message);
       return null;
     }
   }

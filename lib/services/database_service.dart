@@ -55,14 +55,12 @@ class DatabaseService {
 
       return document;
     } catch (e) {
-      print(e.toString());
       return null;
     }
   }
 
   Future getUser(userId) async {
     final user = await userCollection.doc(userId).get();
-    print(user.data());
   }
 
   Widget getUserData(value) {
@@ -95,7 +93,6 @@ class DatabaseService {
       HashMap<String, Object> userData = HashMap.from(data);
       await userCollection.doc(uid).set(userData);
     } catch (e) {
-      print(e);
       return null;
     }
   }
@@ -108,7 +105,6 @@ class DatabaseService {
 
       return document;
     } catch (e) {
-      print(e.toString());
       return null;
     }
   }
@@ -161,7 +157,6 @@ class DatabaseService {
         return true;
       }
     } catch (e) {
-      print(e);
       return null;
     }
   }
@@ -361,14 +356,11 @@ class DatabaseService {
       dynamic newBalance = double.parse(submission.price) + balance;
       newBalance = newBalance.toStringAsFixed(2);
 
-      print(newBalance);
-
       await balanceCollection
           .doc(submission.user)
           .update({"balance": newBalance});
       return Alert().showAlert(message: "Success", context: context);
     } on FirebaseException catch (e) {
-      print(e.toString());
       Alert().showAlert(message: e.message, context: context, isSuccess: false);
       return null;
     }
@@ -383,7 +375,6 @@ class DatabaseService {
       else
         return false;
     } on FirebaseException catch (e) {
-      print(e.message);
       return false;
     }
   }
