@@ -46,13 +46,13 @@ class Profile extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      IconButton(
-                        tooltip: 'settings',
-                        icon: Icon(
-                          Icons.settings,
-                        ),
-                        onPressed: () {},
-                      ),
+                      // IconButton(
+                      //   tooltip: 'settings',
+                      //   icon: Icon(
+                      //     Icons.settings,
+                      //   ),
+                      //   onPressed: () {},
+                      // ),
                       IconButton(
                         tooltip: 'sign out',
                         icon: Icon(Icons.power_settings_new_rounded),
